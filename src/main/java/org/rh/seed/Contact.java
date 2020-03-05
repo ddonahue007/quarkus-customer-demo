@@ -1,13 +1,21 @@
 package org.rh.seed;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @XmlRootElement
+@RegisterForReflection
 public class Contact {
     private String id;
     private String name;
     private String address;
-    private String phoneNumber;
+    private String email;
+
+    // For now just store contacts in memory.
+    public static List<Contact> customerList = new ArrayList<>();
 
     public Contact() {}
 
@@ -27,8 +35,8 @@ public class Contact {
         this.address = address;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getId() {
@@ -39,8 +47,8 @@ public class Contact {
         return name;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getEmail() {
+        return email;
     }
 
     public String getAddress() {
