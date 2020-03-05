@@ -1,12 +1,10 @@
 package org.rh.seed;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-@XmlRootElement
 @RegisterForReflection
 public class Contact {
     private String id;
