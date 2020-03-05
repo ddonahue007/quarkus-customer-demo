@@ -12,15 +12,14 @@ public class Contact {
     private String address;
     private String email;
 
-    // For now just store contacts in memory.
-    public static List<Contact> customerList = new ArrayList<>();
-
+    // constructors
     public Contact() {}
 
     public Contact(String id) {
         this.id = id;
     }
 
+    // accessor methods
     public void setId(String id) {
         this.id = id;
     }
