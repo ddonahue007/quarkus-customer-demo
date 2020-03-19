@@ -16,7 +16,10 @@
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>1.2.1.Final</quarkus.platform.version>
-    <surefire-plugin.version>2.22.1</surefire-plugin.version>
+    <surefire-plugin.version>3.0.0-M4</surefire-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
+    <version.frontend-maven-plugin>1.7.5</version.frontend-maven-plugin>
+    <version.resources-plugin>3.1.0</version.resources-plugin>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -76,6 +79,40 @@
           </systemProperties>
         </configuration>
       </plugin>
+      <!-- Used to run the patternfly(react) build -->
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <!-- Use the latest released version:
+          https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
+        <version>${version.frontend-maven-plugin}</version>
+        <configuration>
+          <workingDirectory>webapp</workingDirectory>
+        </configuration>
+      </plugin>
+      <!-- Copy the built webapp to the directory used by Quarkus -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${version.resources-plugin}</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/META-INF/resources/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>webapp/dist/webapp</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -90,7 +127,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
+            <version>${maven-failsafe-plugin.version}</version>
             <executions>
               <execution>
                 <goals>
@@ -110,6 +147,120 @@
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+    </profile>
+    <profile>
+      <!--
+        Installs node and yarn in the webapp/node and webapp/node_modules folders respectively.
+        Run 'mvn package -Dui.deps':
+          * the first time you have checked out the source.
+          * whenever the dependencies have been changed in package.json (delete the webapp/node_modules folder first!)
+      -->
+      <id>install.ui.deps</id>
+      <activation>
+        <property>
+          <name>ui.deps</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <!--
+                  Install node and yarn for the plugin to have a copy.
+                -->
+                <id>install node and yarn</id>
+                <goals>
+                  <goal>install-node-and-yarn</goal>
+                </goals>
+                <configuration>
+                  <!-- Make sure these match the version you installed on your system -->
+                  <nodeVersion>v10.18.0</nodeVersion>
+                  <yarnVersion>v1.19.1</yarnVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <!--
+                  Run yarn install when having updated dependencies
+                  -->
+                <id>yarn install</id>
+                <goals>
+                  <goal>yarn</goal>
+                </goals>
+                <!-- Optional configuration which provides for running any yarn command -->
+                <configuration>
+                  <arguments>install</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        Since building the ui is slightly time-consuming, and not all changes necessarily affect the ui, turn on
+        building the ui explicitly by running 'atlas-package -Dob.ui.dev'.
+
+        This is faster than the production build as it does not perform all optimisations at build time.
+      -->
+      <id>build.ui.dev</id>
+      <activation>
+        <property>
+          <name>build.ui.dev</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>yarn build</id>
+                <goals>
+                  <goal>yarn</goal>
+                </goals>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        start the ui in dev mode
+      -->
+      <id>start.ui.dev</id>
+      <activation>
+        <property>
+          <name>start.ui.dev</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>yarn start:dev</id>
+                <goals>
+                  <goal>yarn</goal>
+                </goals>
+                <configuration>
+                  <arguments>start:dev</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
