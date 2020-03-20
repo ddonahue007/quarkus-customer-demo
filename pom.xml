@@ -105,7 +105,7 @@
               <outputDirectory>${basedir}/target/classes/META-INF/resources/</outputDirectory>
               <resources>
                 <resource>
-                  <directory>webapp/dist/webapp</directory>
+                  <directory>webapp/dist</directory>
                   <filtering>false</filtering>
                 </resource>
               </resources>
@@ -206,10 +206,10 @@
 
         This is faster than the production build as it does not perform all optimisations at build time.
       -->
-      <id>build.ui.dev</id>
+      <id>ui.deps</id>
       <activation>
         <property>
-          <name>build.ui.dev</name>
+          <name>ui.deps</name>
         </property>
       </activation>
       <build>
@@ -236,10 +236,10 @@
       <!--
         start the ui in dev mode
       -->
-      <id>start.ui.dev</id>
+      <id>ui.dev</id>
       <activation>
         <property>
-          <name>start.ui.dev</name>
+          <name>ui.dev</name>
         </property>
       </activation>
       <build>
