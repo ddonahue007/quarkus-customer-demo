@@ -6,7 +6,6 @@ import java.util.List;
 
 @Path("/customer")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class Customer {
     private CustomerDataService dataService = CustomerDataService.getInstance();
 
@@ -16,6 +15,7 @@ public class Customer {
     }
 
     @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     public String createCustomer(Contact newCustomer) {
         return dataService.addCustomer(newCustomer);
     }
