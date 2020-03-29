@@ -18,8 +18,8 @@
     <quarkus.platform.version>1.2.1.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M4</surefire-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M4</maven-failsafe-plugin.version>
-    <version.frontend-maven-plugin>1.7.5</version.frontend-maven-plugin>
-    <version.resources-plugin>3.1.0</version.resources-plugin>
+    <frontend-maven-plugin.version>1.7.5</frontend-maven-plugin.version>
+    <resources-plugin.version>3.1.0</resources-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -85,7 +85,7 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <!-- Use the latest released version:
           https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-        <version>${version.frontend-maven-plugin}</version>
+        <version>${frontend-maven-plugin.version}</version>
         <configuration>
           <workingDirectory>webapp</workingDirectory>
         </configuration>
@@ -93,7 +93,7 @@
       <!-- Copy the built webapp to the directory used by Quarkus -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>${version.resources-plugin}</version>
+        <version>${resources-plugin.version}</version>
         <executions>
           <execution>
             <id>copy-resources</id>
@@ -142,79 +142,38 @@
               </execution>
             </executions>
           </plugin>
-        </plugins>
-      </build>
-      <properties>
-        <quarkus.package.type>native</quarkus.package.type>
-      </properties>
-    </profile>
-    <profile>
-      <!--
-        Installs node and yarn in the webapp/node and webapp/node_modules folders respectively.
-        Run 'mvn package -Dui.deps':
-          * the first time you have checked out the source.
-          * whenever the dependencies have been changed in package.json (delete the webapp/node_modules folder first!)
-      -->
-      <id>ui.deps</id>
-      <activation>
-        <property>
-          <name>ui.deps</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
+          <!--
+            Installs node and yarn in the webapp/node directory
+            * the first time you have checked out the source.
+            * whenever the dependencies have been changed in package.json (delete the webapp/node_modules folder first!)
+          -->
           <plugin>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontend-maven-plugin.version}</version>
             <executions>
               <execution>
-                <!--
-                  Install node and yarn for the plugin to have a copy.
-                -->
+                <!-- Install node and yarn for the plugin to have a copy -->
                 <id>install node and yarn</id>
                 <goals>
                   <goal>install-node-and-yarn</goal>
                 </goals>
                 <configuration>
-                  <!-- Make sure these match the version you installed on your system -->
                   <nodeVersion>v10.18.0</nodeVersion>
                   <yarnVersion>v1.19.1</yarnVersion>
                 </configuration>
               </execution>
               <execution>
-                <!--
-                  Run yarn install when having updated dependencies
-                  -->
+                <!-- Run yarn install when having to update dependencies -->
                 <id>yarn install</id>
                 <goals>
                   <goal>yarn</goal>
                 </goals>
-                <!-- Optional configuration which provides for running any yarn command -->
                 <configuration>
                   <arguments>install</arguments>
                 </configuration>
               </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <!--
-        Build ui
-      -->
-      <id>ui.dev</id>
-      <activation>
-        <property>
-          <name>ui.dev</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
+              <!-- Build ui -->
               <execution>
                 <id>yarn build</id>
                 <goals>
@@ -228,6 +187,9 @@
           </plugin>
         </plugins>
       </build>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
     </profile>
   </profiles>
 </project>
