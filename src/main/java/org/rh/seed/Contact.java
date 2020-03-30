@@ -1,8 +1,5 @@
 package org.rh.seed;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection

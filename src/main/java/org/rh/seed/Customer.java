@@ -1,12 +1,13 @@
 package org.rh.seed;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Path("/customer")
+@Path("customer")
 @Produces(MediaType.APPLICATION_JSON)
-public class Customer {
+public class Customer extends Application {
     private CustomerDataService dataService = CustomerDataService.getInstance();
 
     @GET
